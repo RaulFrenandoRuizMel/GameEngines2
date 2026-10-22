@@ -346,8 +346,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f058519226d74d1469d1647b192ac16c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LanzadorJuegoPCVR
-  destino: 1
   regresarConYIzquierda: 0
+  rutaRelativaLobby: ..\..\LOBBYEXES\LobbyCasitasDelTerror.exe
   esperaLiberarXR: 0.8
   esperaConfirmarProceso: 1.5
 --- !u!4 &45637741
@@ -1849,31 +1849,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4937870c21ed7a5428f2c6187542617e, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 8.219772
+      value: 8.20298
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4937870c21ed7a5428f2c6187542617e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.977
+      value: 1.1526318
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4937870c21ed7a5428f2c6187542617e, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 10.009087
+      value: 9.975563
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4937870c21ed7a5428f2c6187542617e, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.080781415
+      value: 0.071954586
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4937870c21ed7a5428f2c6187542617e, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.89443535
+      value: 0.897107
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4937870c21ed7a5428f2c6187542617e, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.13625863
+      value: 0.117388256
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4937870c21ed7a5428f2c6187542617e, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.41820258
+      value: 0.41981137
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4937870c21ed7a5428f2c6187542617e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1885,7 +1885,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4937870c21ed7a5428f2c6187542617e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 161.853
+      value: 164.267
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4937870c21ed7a5428f2c6187542617e, type: 3}
       propertyPath: m_ConstrainProportionsScale
@@ -2003,7 +2003,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 5.83, y: 1.48, z: 1.94}
+  m_Size: {x: 5.83, y: 2.21, z: 1.94}
   m_Center: {x: 0, y: 0.59, z: 0}
 --- !u!4 &444995875 stripped
 Transform:
@@ -3635,6 +3635,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1674627521}
     m_Modifications:
+    - target: {fileID: 153982007679157697, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      propertyPath: m_MoveSpeed
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 1717954561962503725, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_Name
       value: XR Origin (XR Rig)
@@ -3710,6 +3714,9 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 1767192434, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1547634907}
     - targetCorrespondingSourceObject: {fileID: 1767192434, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       insertIndex: -1
       addedObject: {fileID: 803548329}
@@ -8924,7 +8931,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!136 &858964755
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -9694,17 +9701,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1093950858}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 720212246}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -128.79}
-  m_SizeDelta: {x: 718.8513, y: 53.2988}
+  m_AnchoredPosition: {x: 0, y: -0.604}
+  m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1093950860
 MonoBehaviour:
@@ -9753,8 +9760,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 0.1
+  m_fontSizeBase: 0.1
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -9792,7 +9799,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -6.5285416, y: 0, z: 1.4886703, w: 0}
+  m_margin: {x: -0.3828776, y: 0.42355537, z: -0.4020118, w: 0.34794998}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -9818,7 +9825,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e6fd4e2f7052a742b9edd9b52a5006f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TextoTerror
-  dialogueText: TU... NO ERES BIENVENIDO AQUI...
+  dialogueText: TU... NO ERES BIENVENIDO AQUI... VETE
   playOnStart: 0
   hideAfterFinished: 1
   hideDelay: 3
@@ -10632,7 +10639,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!223 &1547634906
 Canvas:
   m_ObjectHideFlags: 0
@@ -10642,7 +10649,7 @@ Canvas:
   m_GameObject: {fileID: 1547634903}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
+  m_RenderMode: 2
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
@@ -10665,19 +10672,19 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1547634903}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 1.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 149158427}
   - {fileID: 720212246}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 229746289}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -0, y: 0.1}
+  m_SizeDelta: {x: 1.8, y: 1.2}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1551866154
 GameObject:
   m_ObjectHideFlags: 0
@@ -11396,7 +11403,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1674627521
 Transform:
   m_ObjectHideFlags: 0
@@ -17054,15 +17061,15 @@ RectTransform:
   m_GameObject: {fileID: 1864186030}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 720212246}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 37.71}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1864186032
 MonoBehaviour:
@@ -17086,7 +17093,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: d2e0f5ba087b688479fd0530d67b405e, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -18043,7 +18050,6 @@ SceneRoots:
   - {fileID: 1789210875}
   - {fileID: 858964758}
   - {fileID: 64348209}
-  - {fileID: 1547634907}
   - {fileID: 630752773}
   - {fileID: 1847222681}
   - {fileID: 442638472}

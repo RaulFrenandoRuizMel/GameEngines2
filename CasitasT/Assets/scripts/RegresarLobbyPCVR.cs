@@ -2,51 +2,69 @@ using System.Collections;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+
 using UnityEngine;
 using UnityEngine.XR;
 using UnityEngine.XR.Management;
 
+
 public class LanzadorJuegoPCVR : MonoBehaviour
 {
-    public enum TipoDestino
-    {
-        Equipo1,
-        Lobby
-    }
+    // =====================================================
+    // REGRESO AL LOBBY CON Y
+    // =====================================================
 
-    [Header("Destino")]
-    public TipoDestino destino = TipoDestino.Equipo1;
+    [Header("Regreso al Lobby")]
 
-    [Header("Regreso desde juego")]
+    [Tooltip(
+        "Activalo solamente dentro de los juegos. " +
+        "En el Lobby dejalo apagado."
+    )]
     public bool regresarConYIzquierda = false;
 
+
+    [Tooltip(
+        "Ruta RELATIVA desde el EXE del juego actual hasta el Lobby."
+    )]
+    public string rutaRelativaLobby =
+        @"..\..\LOBBYEXES\LobbyCasitasDelTerror.exe";
+
+
+    // =====================================================
+    // TIEMPOS
+    // =====================================================
+
     [Header("Tiempos")]
+
     public float esperaLiberarXR = 0.8f;
+
     public float esperaConfirmarProceso = 1.5f;
 
 
     // =====================================================
-    // RUTAS
+    // VARIABLES INTERNAS
     // =====================================================
 
-    private const string RUTA_EQUIPO1 =
-        @"C:\Users\Wazab\OneDrive\Documents\Unity\Equipo1\EXEEQUIPO1\Equipo1Juegito.exe";
+    private InputDevice controlIzquierdo;
 
-    private const string RUTA_LOBBY =
-        @"C:\xampp\htdocs\LobbyVR\LobbyCasitasDelTerror\LOBBYEXES\LobbyCasitasDelTerror.exe";
+    private bool yAnterior = false;
+
+    private bool cambiandoAplicacion = false;
 
 
     // =====================================================
-    // WINDOWS
+    // WINDOWS API
     // =====================================================
 
     [StructLayout(LayoutKind.Sequential)]
     private struct STARTUPINFO
     {
         public int cb;
+
         public System.IntPtr lpReserved;
         public System.IntPtr lpDesktop;
         public System.IntPtr lpTitle;
+
         public int dwX;
         public int dwY;
         public int dwXSize;
@@ -55,8 +73,10 @@ public class LanzadorJuegoPCVR : MonoBehaviour
         public int dwYCountChars;
         public int dwFillAttribute;
         public int dwFlags;
+
         public short wShowWindow;
         public short cbReserved2;
+
         public System.IntPtr lpReserved2;
         public System.IntPtr hStdInput;
         public System.IntPtr hStdOutput;
@@ -69,6 +89,7 @@ public class LanzadorJuegoPCVR : MonoBehaviour
     {
         public System.IntPtr hProcess;
         public System.IntPtr hThread;
+
         public int dwProcessId;
         public int dwThreadId;
     }
@@ -112,22 +133,47 @@ public class LanzadorJuegoPCVR : MonoBehaviour
     );
 
 
-    private const uint WAIT_TIMEOUT = 0x00000102;
+    [DllImport("kernel32.dll")]
+    private static extern uint GetCurrentProcessId();
+
+
+    [DllImport(
+        "kernel32.dll",
+        SetLastError = true
+    )]
+    private static extern System.IntPtr OpenProcess(
+        uint dwDesiredAccess,
+        bool bInheritHandle,
+        uint dwProcessId
+    );
+
+
+    [DllImport(
+        "kernel32.dll",
+        SetLastError = true
+    )]
+    private static extern bool TerminateProcess(
+        System.IntPtr hProcess,
+        uint uExitCode
+    );
+
+
+    private const uint WAIT_TIMEOUT =
+        0x00000102;
+
+
+    private const uint PROCESS_TERMINATE =
+        0x0001;
 
 
     // =====================================================
-    // META QUEST
+    // START
     // =====================================================
-
-    private InputDevice controlIzquierdo;
-    private bool yAnterior = false;
-
-    private bool cambiandoAplicacion = false;
-
 
     void Start()
     {
         Application.runInBackground = true;
+
 
         if (regresarConYIzquierda)
         {
@@ -136,9 +182,12 @@ public class LanzadorJuegoPCVR : MonoBehaviour
     }
 
 
+    // =====================================================
+    // UPDATE
+    // =====================================================
+
     void Update()
     {
-        // En el Lobby esto estará apagado.
         if (!regresarConYIzquierda)
             return;
 
@@ -149,34 +198,13 @@ public class LanzadorJuegoPCVR : MonoBehaviour
         }
 
 
-        bool yPresionado = false;
-
-
-        bool recibido =
-            controlIzquierdo.TryGetFeatureValue(
-                CommonUsages.secondaryButton,
-                out yPresionado
-            );
-
-
-        if (!recibido)
-            return;
-
-
-        // Y del control izquierdo.
-        if (yPresionado && !yAnterior)
-        {
-            Debug.Log(
-                "Y IZQUIERDA -> REGRESANDO AL LOBBY"
-            );
-
-            LanzarJuego();
-        }
-
-
-        yAnterior = yPresionado;
+        LeerBotonY();
     }
 
+
+    // =====================================================
+    // BUSCAR CONTROL IZQUIERDO
+    // =====================================================
 
     void BuscarControlIzquierdo()
     {
@@ -197,35 +225,156 @@ public class LanzadorJuegoPCVR : MonoBehaviour
 
 
     // =====================================================
-    // ESTA ES LA FUNCIÓN QUE USA MANOHORROR
+    // BOTON Y
     // =====================================================
 
-    public void LanzarJuego()
+    void LeerBotonY()
     {
-        if (cambiandoAplicacion)
+        bool yPresionado = false;
+
+
+        bool recibido =
+            controlIzquierdo.TryGetFeatureValue(
+                CommonUsages.secondaryButton,
+                out yPresionado
+            );
+
+
+        if (!recibido)
             return;
 
 
+        if (yPresionado && !yAnterior)
+        {
+            Debug.Log(
+                "Y IZQUIERDA -> REGRESANDO AL LOBBY"
+            );
+
+
+            // =============================================
+            // SOLO PARA REGRESAR AL LOBBY
+            // =============================================
+
+            LanzarRuta(
+                rutaRelativaLobby
+            );
+        }
+
+
+        yAnterior =
+            yPresionado;
+    }
+
+
+    // =====================================================
+    // FUNCION UNIVERSAL
+    // =====================================================
+    //
+    // Las puertas también usan esta función.
+    //
+    // DestinoJuegoPuerta manda:
+    //
+    // ..\Equipos\EXEEQUIPO4\Equipo4.exe
+    //
+    // Y para regresar:
+    //
+    // ..\..\LOBBYEXES\LobbyCasitasDelTerror.exe
+    //
+    // =====================================================
+
+    public void LanzarRuta(
+        string rutaRelativa
+    )
+    {
+        if (cambiandoAplicacion)
+        {
+            Debug.LogWarning(
+                "YA HAY UN CAMBIO DE APLICACION EN CURSO"
+            );
+
+            return;
+        }
+
+
+        if (string.IsNullOrWhiteSpace(
+            rutaRelativa
+        ))
+        {
+            Debug.LogError(
+                "LA RUTA RELATIVA ESTA VACIA"
+            );
+
+            return;
+        }
+
+
+        // =================================================
+        // CARPETA DEL EXE QUE ESTA CORRIENDO
+        // =================================================
+
+        string carpetaExeActual =
+            Directory.GetParent(
+                Application.dataPath
+            ).FullName;
+
+
+        // =================================================
+        // RESOLVER RUTA RELATIVA
+        // =================================================
+
+        string rutaCompleta =
+            Path.GetFullPath(
+                Path.Combine(
+                    carpetaExeActual,
+                    rutaRelativa
+                )
+            );
+
+
+        Debug.Log(
+            "CARPETA DEL EXE ACTUAL:\n" +
+            carpetaExeActual
+        );
+
+
+        Debug.Log(
+            "RUTA RELATIVA RECIBIDA:\n" +
+            rutaRelativa
+        );
+
+
+        Debug.Log(
+            "RUTA FINAL:\n" +
+            rutaCompleta
+        );
+
+
         StartCoroutine(
-            CambiarAplicacion()
+            CambiarAplicacion(
+                rutaCompleta
+            )
         );
     }
 
 
-    IEnumerator CambiarAplicacion()
+    // =====================================================
+    // CAMBIAR APLICACION
+    // =====================================================
+
+    IEnumerator CambiarAplicacion(
+        string rutaDestino
+    )
     {
         cambiandoAplicacion = true;
-
-
-        string rutaDestino =
-            ObtenerRuta();
 
 
         // =================================================
         // 1. VERIFICAR DESTINO
         // =================================================
 
-        if (!File.Exists(rutaDestino))
+        if (!File.Exists(
+            rutaDestino
+        ))
         {
             Debug.LogError(
                 "NO EXISTE EL EXE:\n" +
@@ -255,7 +404,9 @@ public class LanzadorJuegoPCVR : MonoBehaviour
         if (XRGeneralSettings.Instance != null)
         {
             manager =
-                XRGeneralSettings.Instance.Manager;
+                XRGeneralSettings
+                    .Instance
+                    .Manager;
         }
 
 
@@ -268,17 +419,19 @@ public class LanzadorJuegoPCVR : MonoBehaviour
 
 
             manager.StopSubsystems();
+
             manager.DeinitializeLoader();
         }
 
 
-        yield return new WaitForSecondsRealtime(
-            esperaLiberarXR
-        );
+        yield return
+            new WaitForSecondsRealtime(
+                esperaLiberarXR
+            );
 
 
         // =================================================
-        // 3. ABRIR EL OTRO EXE
+        // 3. PREPARAR EXE
         // =================================================
 
         STARTUPINFO startup =
@@ -301,6 +454,10 @@ public class LanzadorJuegoPCVR : MonoBehaviour
 
         PROCESS_INFORMATION proceso;
 
+
+        // =================================================
+        // 4. ABRIR DESTINO
+        // =================================================
 
         bool abierto =
             CreateProcessW(
@@ -334,6 +491,13 @@ public class LanzadorJuegoPCVR : MonoBehaviour
 
             cambiandoAplicacion = false;
 
+
+            yield return
+                StartCoroutine(
+                    RecuperarXR()
+                );
+
+
             yield break;
         }
 
@@ -350,13 +514,20 @@ public class LanzadorJuegoPCVR : MonoBehaviour
         );
 
 
+        Debug.Log(
+            "RUTA EJECUTADA:\n" +
+            rutaDestino
+        );
+
+
         // =================================================
-        // 4. ESPERAR Y CONFIRMAR QUE SIGUE VIVO
+        // 5. ESPERAR Y CONFIRMAR
         // =================================================
 
-        yield return new WaitForSecondsRealtime(
-            esperaConfirmarProceso
-        );
+        yield return
+            new WaitForSecondsRealtime(
+                esperaConfirmarProceso
+            );
 
 
         bool sigueVivo =
@@ -381,6 +552,13 @@ public class LanzadorJuegoPCVR : MonoBehaviour
 
             cambiandoAplicacion = false;
 
+
+            yield return
+                StartCoroutine(
+                    RecuperarXR()
+                );
+
+
             yield break;
         }
 
@@ -390,15 +568,25 @@ public class LanzadorJuegoPCVR : MonoBehaviour
         );
 
 
-        // =================================================
-        // 5. CERRAR ESTA APP
-        // =================================================
-
         Debug.Log(
             "CAMBIO CORRECTO. CERRANDO APP ACTUAL."
         );
 
 
+        // =================================================
+        // 6. CERRAR APP ACTUAL
+        // =================================================
+
+        CerrarAplicacionActual();
+    }
+
+
+    // =====================================================
+    // CERRAR APP ACTUAL
+    // =====================================================
+
+    void CerrarAplicacionActual()
+    {
 #if UNITY_EDITOR
 
         UnityEditor.EditorApplication.isPlaying =
@@ -406,20 +594,88 @@ public class LanzadorJuegoPCVR : MonoBehaviour
 
 #else
 
-        Application.Quit();
+        uint pid =
+            GetCurrentProcessId();
+
+
+        System.IntPtr handle =
+            OpenProcess(
+                PROCESS_TERMINATE,
+                false,
+                pid
+            );
+
+
+        if (handle != System.IntPtr.Zero)
+        {
+            TerminateProcess(
+                handle,
+                0
+            );
+
+
+            CloseHandle(
+                handle
+            );
+        }
+        else
+        {
+            Application.Quit();
+        }
 
 #endif
     }
 
 
-    string ObtenerRuta()
+    // =====================================================
+    // RECUPERAR XR SI FALLA EL NUEVO EXE
+    // =====================================================
+
+    IEnumerator RecuperarXR()
     {
-        if (destino == TipoDestino.Equipo1)
+        Debug.Log(
+            "RECUPERANDO XR..."
+        );
+
+
+        if (XRGeneralSettings.Instance == null)
         {
-            return RUTA_EQUIPO1;
+            yield break;
         }
 
 
-        return RUTA_LOBBY;
+        XRManagerSettings manager =
+            XRGeneralSettings
+                .Instance
+                .Manager;
+
+
+        if (manager == null)
+        {
+            yield break;
+        }
+
+
+        yield return
+            manager.InitializeLoader();
+
+
+        if (manager.activeLoader == null)
+        {
+            Debug.LogError(
+                "NO SE PUDO RECUPERAR XR"
+            );
+
+
+            yield break;
+        }
+
+
+        manager.StartSubsystems();
+
+
+        Debug.Log(
+            "XR RECUPERADO"
+        );
     }
 }
