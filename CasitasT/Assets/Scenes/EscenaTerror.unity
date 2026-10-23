@@ -625,7 +625,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &149158427
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8762,7 +8762,7 @@ MonoBehaviour:
   triggerOnlyOnce: 1
   targetObject: {fileID: 0}
   activateObject1: {fileID: 720212245}
-  activateObject2: {fileID: 0}
+  activateObject2: {fileID: 149158426}
   delay: 0
 --- !u!1 &832575517
 GameObject:
@@ -9041,8 +9041,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   walkSpeed: 5
-  sprintSpeed: 8
-  acceleration: 12
+  sprintSpeed: 30
+  acceleration: 40
   jumpHeight: 1.2
   gravity: -20
   groundedStickForce: -2
@@ -9533,6 +9533,8 @@ GameObject:
   - component: {fileID: 949250711}
   - component: {fileID: 949250713}
   - component: {fileID: 949250712}
+  - component: {fileID: 949250715}
+  - component: {fileID: 949250714}
   m_Layer: 0
   m_Name: TriggerTxt
   m_TagString: Untagged
@@ -9592,6 +9594,39 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 8.43}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &949250714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 949250710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 937048c586088d846ad3693e7fb1b89d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FreezearPlayer
+  targetTag: Player
+  triggerOnlyOnce: 1
+  moveProvider: {fileID: 2116860579}
+  turnProvider: {fileID: 1401574397}
+  restoreControlAfterDelay: 0
+  freezeDuration: 3
+--- !u!114 &949250715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 949250710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c173829cf03bb7e4985de41e7425ee5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FadeToBlack
+  _rawImage: {fileID: 149158428}
+  DuracionFade: 3
+  SegundosDelay: 6
 --- !u!4 &961521316 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1717954561962503726, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
@@ -10339,6 +10374,17 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.0009998154, y: 0.0409998, z: 0.022499995}
   m_Center: {x: -0.0000000037252903, y: 7.6383347e-17, z: 0.0107499985}
+--- !u!114 &1401574397 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6480925242510836759, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+  m_PrefabInstance: {fileID: 796900545}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b29b6c6428c984a8a73ffc2d58063b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1444093020 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 3d79c5e30bd504a498b40184cdd31133, type: 3}
@@ -18041,6 +18087,17 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.0009998154, y: 0.0409998, z: 0.022499995}
   m_Center: {x: -0.0000000037252903, y: 7.6383347e-17, z: 0.0107499985}
+--- !u!114 &2116860579 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 153982007679157697, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+  m_PrefabInstance: {fileID: 796900545}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b1e8c997df241c1a67045eeac79b41b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
