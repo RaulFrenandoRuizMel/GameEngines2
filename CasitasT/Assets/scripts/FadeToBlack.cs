@@ -12,40 +12,49 @@ public class FadeToBlack : MonoBehaviour
 
     private void Update()
     {
-        if (_rawImage.enabled == false)
+        // Solo procesamos la lógica si el trigger fue activado
+        if (!activado) return;
+
+        timer += Time.deltaTime;
+
+        // 1. Esperamos a que pase el tiempo de delay
+        if (timer >= SegundosDelay)
         {
-            _rawImage.enabled = true;
-            timer += Time.deltaTime;
-
-            // Solo empezamos el fade si el timer ya superó los SegundosDelay
-            if (timer > SegundosDelay)
+            // Si la imagen estaba apagada (por el script anterior), la encendemos aquí
+            if (!_rawImage.enabled)
             {
-                // Tiempo real que lleva ocurriendo el fade
-                float tiempoFade = timer - SegundosDelay;
-                
-                Color color = _rawImage.color;
-                // Va de 0 (transparente) a 1 (negro total)
-                color.a = Mathf.Lerp(0f, 1f, tiempoFade / DuracionFade);
-                _rawImage.color = color;
+                _rawImage.enabled = true;
+            }
 
-                // Apagar el script cuando el fade termine para ahorrar rendimiento
-                if (tiempoFade >= DuracionFade)
-                {
-                    activado = false;
-                }
+            // 2. Calculamos el tiempo real que lleva ocurriendo el fade
+            float tiempoFade = timer - SegundosDelay;
+            
+            Color color = _rawImage.color;
+            
+            // Va de 0 (transparente) a 1 (negro total)
+            color.a = Mathf.Clamp01(tiempoFade / DuracionFade);
+            _rawImage.color = color;
+
+            // 3. Cuando el fade termina, detenemos el proceso
+            if (tiempoFade >= DuracionFade)
+            {
+                activado = false;
+                timer = 0f; // Reiniciamos el timer para futuras activaciones
             }
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
+        // Evita reiniciar el fade si ya está en progreso
         if (other.CompareTag("Player") && !activado)
         {
-            // Asegurar que inicie transparente y encender el contador
+            // Forzamos que inicie completamente transparente (Alfa = 0)
             Color color = _rawImage.color;
             color.a = 0f;
             _rawImage.color = color;
             
+            // Encendemos el interruptor y reseteamos el reloj
             activado = true;
             timer = 0f;
         }

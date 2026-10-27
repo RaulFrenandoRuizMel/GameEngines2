@@ -358,7 +358,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 45637739}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f058519226d74d1469d1647b192ac16c, type: 3}
+  m_Script: {fileID: 11500000, guid: 9ef2f2ea15f0d3a4fbc965593be9c21c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LanzadorJuegoPCVR
   rutaRelativaLobby: ..\..\LOBBYEXES\LobbyCasitasDelTerror.exe
@@ -3642,7 +3642,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 153982007679157697, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_MoveSpeed
-      value: 0.5
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1717954561962503725, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_Name
@@ -10788,7 +10788,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.0999, y: 0.0775}
+  m_AnchoredPosition: {x: -0.014, y: -0.024}
   m_SizeDelta: {x: 4.1447, y: 3.0014}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1551866154
