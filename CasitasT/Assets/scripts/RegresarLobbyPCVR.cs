@@ -1,33 +1,56 @@
 using System.Collections;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Text;
 
 using UnityEngine;
 using UnityEngine.XR;
 using UnityEngine.XR.Management;
 
 
+// =========================================================
+// LIBRERIAS EXCLUSIVAS DE WINDOWS
+// =========================================================
+
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+
+using System.Runtime.InteropServices;
+using System.Text;
+
+#endif
+
+
 public class LanzadorJuegoPCVR : MonoBehaviour
 {
     // =====================================================
-    // REGRESO AL LOBBY CON Y
+    // REGRESO AL LOBBY
+    // =====================================================
+    //
+    // MISMO BOTON Y.
+    //
+    // WINDOWS / QUEST LINK:
+    //
+    //      abre el EXE del Lobby
+    //
+    // QUEST STANDALONE:
+    //
+    //      abre el APK del Lobby
+    //
     // =====================================================
 
     [Header("Regreso al Lobby")]
 
     [Tooltip(
-        "Activalo solamente dentro de los juegos. " +
-        "En el Lobby dejalo apagado."
-    )]
-    public bool regresarConYIzquierda = false;
-
-
-    [Tooltip(
-        "Ruta RELATIVA desde el EXE del juego actual hasta el Lobby."
+        "Ruta relativa desde el EXE del juego actual " +
+        "hasta el EXE del Lobby."
     )]
     public string rutaRelativaLobby =
         @"..\..\LOBBYEXES\LobbyCasitasDelTerror.exe";
+
+
+    [Tooltip(
+        "Package Name del APK del Lobby instalado en Meta Quest."
+    )]
+    public string paqueteLobbyQuest =
+        "com.casitasdelterror.lobby";
 
 
     // =====================================================
@@ -55,6 +78,8 @@ public class LanzadorJuegoPCVR : MonoBehaviour
     // =====================================================
     // WINDOWS API
     // =====================================================
+
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
 
     [StructLayout(LayoutKind.Sequential)]
     private struct STARTUPINFO
@@ -165,6 +190,8 @@ public class LanzadorJuegoPCVR : MonoBehaviour
     private const uint PROCESS_TERMINATE =
         0x0001;
 
+#endif
+
 
     // =====================================================
     // START
@@ -175,10 +202,66 @@ public class LanzadorJuegoPCVR : MonoBehaviour
         Application.runInBackground = true;
 
 
-        if (regresarConYIzquierda)
-        {
-            BuscarControlIzquierdo();
-        }
+        // =================================================
+        // MOSTRAR AMBIENTE DETECTADO
+        // =================================================
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+
+        Debug.Log(
+            "========================================"
+        );
+
+        Debug.Log(
+            "AMBIENTE DETECTADO: META QUEST APK"
+        );
+
+        Debug.Log(
+            "LOBBY QUEST: " +
+            paqueteLobbyQuest
+        );
+
+        Debug.Log(
+            "========================================"
+        );
+
+#elif UNITY_STANDALONE_WIN
+
+        Debug.Log(
+            "========================================"
+        );
+
+        Debug.Log(
+            "AMBIENTE DETECTADO: PC / QUEST LINK"
+        );
+
+        Debug.Log(
+            "LOBBY PC: " +
+            rutaRelativaLobby
+        );
+
+        Debug.Log(
+            "========================================"
+        );
+
+#elif UNITY_EDITOR_WIN
+
+        Debug.Log(
+            "========================================"
+        );
+
+        Debug.Log(
+            "AMBIENTE DETECTADO: UNITY EDITOR WINDOWS"
+        );
+
+        Debug.Log(
+            "========================================"
+        );
+
+#endif
+
+
+        BuscarControlIzquierdo();
     }
 
 
@@ -188,7 +271,7 @@ public class LanzadorJuegoPCVR : MonoBehaviour
 
     void Update()
     {
-        if (!regresarConYIzquierda)
+        if (cambiandoAplicacion)
             return;
 
 
@@ -230,6 +313,10 @@ public class LanzadorJuegoPCVR : MonoBehaviour
 
     void LeerBotonY()
     {
+        if (!controlIzquierdo.isValid)
+            return;
+
+
         bool yPresionado = false;
 
 
@@ -244,20 +331,26 @@ public class LanzadorJuegoPCVR : MonoBehaviour
             return;
 
 
+        // =================================================
+        // DETECTAR UNA SOLA PULSACION
+        // =================================================
+
         if (yPresionado && !yAnterior)
         {
             Debug.Log(
-                "Y IZQUIERDA -> REGRESANDO AL LOBBY"
+                "========================================"
+            );
+
+            Debug.Log(
+                "BOTON Y PRESIONADO -> REGRESANDO AL LOBBY"
+            );
+
+            Debug.Log(
+                "========================================"
             );
 
 
-            // =============================================
-            // SOLO PARA REGRESAR AL LOBBY
-            // =============================================
-
-            LanzarRuta(
-                rutaRelativaLobby
-            );
+            RegresarAlLobby();
         }
 
 
@@ -267,25 +360,104 @@ public class LanzadorJuegoPCVR : MonoBehaviour
 
 
     // =====================================================
-    // FUNCION UNIVERSAL
+    // REGRESAR AL LOBBY
     // =====================================================
     //
-    // Las puertas también usan esta función.
+    // ESTA FUNCION DETECTA AUTOMATICAMENTE
+    // EL AMBIENTE.
     //
-    // DestinoJuegoPuerta manda:
-    //
-    // ..\Equipos\EXEEQUIPO4\Equipo4.exe
-    //
-    // Y para regresar:
-    //
-    // ..\..\LOBBYEXES\LobbyCasitasDelTerror.exe
-    //
+    // =====================================================
+
+    void RegresarAlLobby()
+    {
+        if (cambiandoAplicacion)
+            return;
+
+
+        // =================================================
+        // META QUEST STANDALONE
+        // =================================================
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+
+        Debug.Log(
+            "META QUEST DETECTADO"
+        );
+
+
+        Debug.Log(
+            "ABRIENDO APK DEL LOBBY:\n" +
+            paqueteLobbyQuest
+        );
+
+
+        if (string.IsNullOrWhiteSpace(
+            paqueteLobbyQuest
+        ))
+        {
+            Debug.LogError(
+                "EL PACKAGE DEL LOBBY ESTA VACIO"
+            );
+
+            return;
+        }
+
+
+        StartCoroutine(
+            CambiarAplicacionQuest(
+                paqueteLobbyQuest.Trim()
+            )
+        );
+
+
+        // =================================================
+        // WINDOWS / QUEST LINK / AIR LINK
+        // =================================================
+
+#elif UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+
+        Debug.Log(
+            "WINDOWS / PCVR DETECTADO"
+        );
+
+
+        Debug.Log(
+            "ABRIENDO EXE DEL LOBBY:\n" +
+            rutaRelativaLobby
+        );
+
+
+        LanzarRuta(
+            rutaRelativaLobby
+        );
+
+
+        // =================================================
+        // OTRA PLATAFORMA
+        // =================================================
+
+#else
+
+        Debug.LogError(
+            "PLATAFORMA NO SOPORTADA: " +
+            Application.platform
+        );
+
+#endif
+    }
+
+
+    // =====================================================
+    // WINDOWS
+    // LANZAR RUTA RELATIVA
     // =====================================================
 
     public void LanzarRuta(
         string rutaRelativa
     )
     {
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+
         if (cambiandoAplicacion)
         {
             Debug.LogWarning(
@@ -309,7 +481,7 @@ public class LanzadorJuegoPCVR : MonoBehaviour
 
 
         // =================================================
-        // CARPETA DEL EXE QUE ESTA CORRIENDO
+        // CARPETA DEL EXE ACTUAL
         // =================================================
 
         string carpetaExeActual =
@@ -326,7 +498,7 @@ public class LanzadorJuegoPCVR : MonoBehaviour
             Path.GetFullPath(
                 Path.Combine(
                     carpetaExeActual,
-                    rutaRelativa
+                    rutaRelativa.Trim()
                 )
             );
 
@@ -350,18 +522,22 @@ public class LanzadorJuegoPCVR : MonoBehaviour
 
 
         StartCoroutine(
-            CambiarAplicacion(
+            CambiarAplicacionWindows(
                 rutaCompleta
             )
         );
+
+#endif
     }
 
 
     // =====================================================
-    // CAMBIAR APLICACION
+    // CAMBIAR APLICACION WINDOWS
     // =====================================================
 
-    IEnumerator CambiarAplicacion(
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+
+    IEnumerator CambiarAplicacionWindows(
         string rutaDestino
     )
     {
@@ -382,7 +558,9 @@ public class LanzadorJuegoPCVR : MonoBehaviour
             );
 
 
-            cambiandoAplicacion = false;
+            cambiandoAplicacion =
+                false;
+
 
             yield break;
         }
@@ -398,7 +576,8 @@ public class LanzadorJuegoPCVR : MonoBehaviour
         // 2. LIBERAR OPENXR
         // =================================================
 
-        XRManagerSettings manager = null;
+        XRManagerSettings manager =
+            null;
 
 
         if (XRGeneralSettings.Instance != null)
@@ -419,6 +598,7 @@ public class LanzadorJuegoPCVR : MonoBehaviour
 
 
             manager.StopSubsystems();
+
 
             manager.DeinitializeLoader();
         }
@@ -456,7 +636,7 @@ public class LanzadorJuegoPCVR : MonoBehaviour
 
 
         // =================================================
-        // 4. ABRIR DESTINO
+        // 4. ABRIR EXE DEL LOBBY
         // =================================================
 
         bool abierto =
@@ -483,13 +663,14 @@ public class LanzadorJuegoPCVR : MonoBehaviour
 
 
             Debug.LogError(
-                "NO SE PUDO ABRIR EL DESTINO. " +
+                "NO SE PUDO ABRIR EL LOBBY. " +
                 "ERROR WINDOWS: " +
                 error
             );
 
 
-            cambiandoAplicacion = false;
+            cambiandoAplicacion =
+                false;
 
 
             yield return
@@ -502,26 +683,23 @@ public class LanzadorJuegoPCVR : MonoBehaviour
         }
 
 
-        // No necesitamos el thread handle.
+        // =================================================
+        // CERRAR THREAD HANDLE
+        // =================================================
+
         CloseHandle(
             proceso.hThread
         );
 
 
         Debug.Log(
-            "NUEVO EXE ABIERTO. PID: " +
+            "LOBBY EXE ABIERTO. PID: " +
             proceso.dwProcessId
         );
 
 
-        Debug.Log(
-            "RUTA EJECUTADA:\n" +
-            rutaDestino
-        );
-
-
         // =================================================
-        // 5. ESPERAR Y CONFIRMAR
+        // 5. ESPERAR
         // =================================================
 
         yield return
@@ -529,6 +707,10 @@ public class LanzadorJuegoPCVR : MonoBehaviour
                 esperaConfirmarProceso
             );
 
+
+        // =================================================
+        // 6. CONFIRMAR QUE EL LOBBY SIGUE VIVO
+        // =================================================
 
         bool sigueVivo =
             WaitForSingleObject(
@@ -540,8 +722,8 @@ public class LanzadorJuegoPCVR : MonoBehaviour
         if (!sigueVivo)
         {
             Debug.LogError(
-                "EL NUEVO EXE SE CERRO. " +
-                "NO CIERRO LA APP ACTUAL."
+                "EL LOBBY SE CERRO AL INICIAR. " +
+                "NO CIERRO EL JUEGO ACTUAL."
             );
 
 
@@ -550,7 +732,8 @@ public class LanzadorJuegoPCVR : MonoBehaviour
             );
 
 
-            cambiandoAplicacion = false;
+            cambiandoAplicacion =
+                false;
 
 
             yield return
@@ -569,23 +752,28 @@ public class LanzadorJuegoPCVR : MonoBehaviour
 
 
         Debug.Log(
-            "CAMBIO CORRECTO. CERRANDO APP ACTUAL."
+            "LOBBY ABIERTO CORRECTAMENTE."
+        );
+
+
+        Debug.Log(
+            "CERRANDO JUEGO ACTUAL..."
         );
 
 
         // =================================================
-        // 6. CERRAR APP ACTUAL
+        // 7. CERRAR JUEGO ACTUAL
         // =================================================
 
-        CerrarAplicacionActual();
+        CerrarAplicacionActualWindows();
     }
 
 
     // =====================================================
-    // CERRAR APP ACTUAL
+    // CERRAR APLICACION WINDOWS
     // =====================================================
 
-    void CerrarAplicacionActual()
+    void CerrarAplicacionActualWindows()
     {
 #if UNITY_EDITOR
 
@@ -626,9 +814,277 @@ public class LanzadorJuegoPCVR : MonoBehaviour
 #endif
     }
 
+#endif
+
 
     // =====================================================
-    // RECUPERAR XR SI FALLA EL NUEVO EXE
+    // META QUEST STANDALONE
+    // =====================================================
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+
+    IEnumerator CambiarAplicacionQuest(
+        string paqueteQuest
+    )
+    {
+        cambiandoAplicacion =
+            true;
+
+
+        // =================================================
+        // 1. VALIDAR PACKAGE
+        // =================================================
+
+        if (string.IsNullOrWhiteSpace(
+            paqueteQuest
+        ))
+        {
+            Debug.LogError(
+                "PACKAGE DEL LOBBY VACIO"
+            );
+
+
+            cambiandoAplicacion =
+                false;
+
+
+            yield break;
+        }
+
+
+        Debug.Log(
+            "PACKAGE LOBBY:\n" +
+            paqueteQuest
+        );
+
+
+        // =================================================
+        // 2. LIBERAR OPENXR
+        // =================================================
+
+        XRManagerSettings manager =
+            null;
+
+
+        if (XRGeneralSettings.Instance != null)
+        {
+            manager =
+                XRGeneralSettings
+                    .Instance
+                    .Manager;
+        }
+
+
+        if (manager != null &&
+            manager.isInitializationComplete)
+        {
+            Debug.Log(
+                "LIBERANDO XR QUEST..."
+            );
+
+
+            manager.StopSubsystems();
+
+
+            manager.DeinitializeLoader();
+        }
+
+
+        yield return
+            new WaitForSecondsRealtime(
+                esperaLiberarXR
+            );
+
+
+        bool abierto =
+            false;
+
+
+        // =================================================
+        // 3. ABRIR APK DEL LOBBY
+        // =================================================
+
+        try
+        {
+            using (
+                AndroidJavaClass unityPlayer =
+                    new AndroidJavaClass(
+                        "com.unity3d.player.UnityPlayer"
+                    )
+            )
+            {
+                AndroidJavaObject actividadActual =
+                    unityPlayer
+                        .GetStatic<AndroidJavaObject>(
+                            "currentActivity"
+                        );
+
+
+                if (actividadActual == null)
+                {
+                    Debug.LogError(
+                        "NO SE ENCONTRO currentActivity"
+                    );
+                }
+                else
+                {
+                    AndroidJavaObject packageManager =
+                        actividadActual.Call<AndroidJavaObject>(
+                            "getPackageManager"
+                        );
+
+
+                    // =====================================
+                    // PRIMERO INTENTAMOS OBTENER EL
+                    // LAUNCH INTENT DEL PACKAGE
+                    // =====================================
+
+                    AndroidJavaObject intent =
+                        packageManager
+                            .Call<AndroidJavaObject>(
+                                "getLaunchIntentForPackage",
+                                paqueteQuest
+                            );
+
+
+                    // =====================================
+                    // SI NO LO ENCUENTRA,
+                    // CREAMOS UN INTENT MANUAL
+                    // =====================================
+
+                    if (intent == null)
+                    {
+                        Debug.LogWarning(
+                            "getLaunchIntentForPackage " +
+                            "NO ENCONTRO EL LOBBY. " +
+                            "INTENTANDO INTENT MANUAL."
+                        );
+
+
+                        intent =
+                            new AndroidJavaObject(
+                                "android.content.Intent",
+                                "android.intent.action.MAIN"
+                            );
+
+
+                        intent.Call<AndroidJavaObject>(
+                            "addCategory",
+                            "android.intent.category.LAUNCHER"
+                        );
+
+
+                        intent.Call<AndroidJavaObject>(
+                            "setPackage",
+                            paqueteQuest
+                        );
+                    }
+
+
+                    if (intent != null)
+                    {
+                        // =================================
+                        // FLAG_ACTIVITY_NEW_TASK
+                        // =================================
+
+                        intent.Call<AndroidJavaObject>(
+                            "addFlags",
+                            0x10000000
+                        );
+
+
+                        Debug.Log(
+                            "ABRIENDO LOBBY APK:\n" +
+                            paqueteQuest
+                        );
+
+
+                        actividadActual.Call(
+                            "startActivity",
+                            intent
+                        );
+
+
+                        abierto =
+                            true;
+
+
+                        Debug.Log(
+                            "LOBBY APK LANZADO"
+                        );
+
+
+                        // =================================
+                        // CERRAR JUEGO ACTUAL
+                        // =================================
+
+                        actividadActual.Call(
+                            "finish"
+                        );
+
+
+                        Debug.Log(
+                            "JUEGO ACTUAL FINALIZADO"
+                        );
+
+
+                        intent.Dispose();
+                    }
+
+
+                    if (packageManager != null)
+                    {
+                        packageManager.Dispose();
+                    }
+
+
+                    actividadActual.Dispose();
+                }
+            }
+        }
+        catch (
+            System.Exception error
+        )
+        {
+            Debug.LogError(
+                "ERROR AL ABRIR EL LOBBY APK:\n" +
+                error
+            );
+
+
+            abierto =
+                false;
+        }
+
+
+        // =================================================
+        // 4. SI FALLA, RECUPERAR XR
+        // =================================================
+
+        if (!abierto)
+        {
+            Debug.LogError(
+                "NO SE PUDO ABRIR EL LOBBY APK:\n" +
+                paqueteQuest
+            );
+
+
+            cambiandoAplicacion =
+                false;
+
+
+            yield return
+                StartCoroutine(
+                    RecuperarXR()
+                );
+        }
+    }
+
+#endif
+
+
+    // =====================================================
+    // RECUPERAR XR SI FALLA EL CAMBIO
     // =====================================================
 
     IEnumerator RecuperarXR()
@@ -640,6 +1096,10 @@ public class LanzadorJuegoPCVR : MonoBehaviour
 
         if (XRGeneralSettings.Instance == null)
         {
+            Debug.LogError(
+                "XRGeneralSettings ES NULL"
+            );
+
             yield break;
         }
 
@@ -652,6 +1112,10 @@ public class LanzadorJuegoPCVR : MonoBehaviour
 
         if (manager == null)
         {
+            Debug.LogError(
+                "XR MANAGER ES NULL"
+            );
+
             yield break;
         }
 
@@ -665,7 +1129,6 @@ public class LanzadorJuegoPCVR : MonoBehaviour
             Debug.LogError(
                 "NO SE PUDO RECUPERAR XR"
             );
-
 
             yield break;
         }

@@ -4,16 +4,17 @@ using UnityEngine.UI;
 public class FadeToBlack : MonoBehaviour
 {
     [SerializeField] private RawImage _rawImage;
-    [SerializeField] private float DuracionFade = 3f;
-    [SerializeField] private float SegundosDelay = 6f;
+    [SerializeField] private float DuracionFade = 2f;
+    [SerializeField] private float SegundosDelay = 0f;
 
     private bool activado = false;
     private float timer = 0f;
 
     private void Update()
     {
-        if (activado)
+        if (_rawImage.enabled == false)
         {
+            _rawImage.enabled = true;
             timer += Time.deltaTime;
 
             // Solo empezamos el fade si el timer ya superó los SegundosDelay

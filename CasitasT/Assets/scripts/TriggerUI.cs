@@ -12,6 +12,7 @@ public class TriggerUI : MonoBehaviour
     [Header("Objetivo")]
     [Tooltip("Arrastra aquí el objeto que tiene el script TextoTerror")]
     [SerializeField] private TextoTerror targetTextoTerror;
+    [SerializeField] private GameObject Txt_txt;
 
     [Header("Sobrescribir Texto (Opcional)")]
     [Tooltip("Si escribes algo aquí, dirá este texto en lugar del configurado por defecto")]
@@ -28,10 +29,14 @@ public class TriggerUI : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Txt_txt.SetActive(true);
         if (_hasTriggered && triggerOnlyOnce) return;
+        
+      
 
         if (other.CompareTag(targetTag))
         {
+            
             if (targetTextoTerror != null)
             {
                 if (!string.IsNullOrEmpty(customTextOverride))
