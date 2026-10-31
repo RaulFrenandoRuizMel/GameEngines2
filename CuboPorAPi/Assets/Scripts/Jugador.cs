@@ -12,19 +12,19 @@ public class Jugador : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Keyboard.current.upArrowKey.wasPressedThisFrame);
+        if (Keyboard.current.upArrowKey.wasPressedThisFrame)
         {
             this.transform.position += Vector3.up;
         }
-        if (Keyboard.current.downArrowKey.wasPressedThisFrame) ;
+        if (Keyboard.current.downArrowKey.wasPressedThisFrame)
         {
             this.transform.position += Vector3.down;
         }
-        if (Keyboard.current.rightArrowKey.wasPressedThisFrame) ;
+        if (Keyboard.current.rightArrowKey.wasPressedThisFrame)
         {
             this.transform.position += Vector3.right;
         }
-        if (Keyboard.current.leftArrowKey.wasPressedThisFrame) ;
+        if (Keyboard.current.leftArrowKey.wasPressedThisFrame)
         {
             this.transform.position += Vector3.left;
         }
